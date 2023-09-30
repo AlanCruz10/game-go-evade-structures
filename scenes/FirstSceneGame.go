@@ -6,23 +6,27 @@ import (
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/widget"
 	"ganego/models"
-	"ganego/utilies"
+	"ganego/utilities"
 	"math/rand"
 )
 
 type FirstSceneGame struct {
-	window    fyne.Window
-	app       fyne.App
-	container *fyne.Container
-	score     *widget.Label
+	window          fyne.Window
+	app             fyne.App
+	container       *fyne.Container
+	containerStreet *fyne.Container
+	containerView   *fyne.Container
+	score           *widget.Label
 }
 
 func NewFirstSceneGame(w fyne.Window, app fyne.App) *FirstSceneGame {
 	return &FirstSceneGame{
-		window:    w,
-		app:       app,
-		container: container.NewWithoutLayout(),
-		score:     widget.NewLabel(""),
+		window:          w,
+		app:             app,
+		container:       container.NewWithoutLayout(),
+		containerStreet: container.NewWithoutLayout(),
+		containerView:   container.NewWithoutLayout(),
+		score:           widget.NewLabel(""),
 	}
 }
 
@@ -31,9 +35,17 @@ func (f *FirstSceneGame) InitScene() {
 	street := models.NewStreet()
 	street.GetImage()[streetRandom].Resize(fyne.NewSize(street.GetSize().Width, street.GetSize().Height))
 	street.GetImage()[streetRandom].Move(street.GetPosition())
-	f.container.Add(street.GetImage()[streetRandom])
+	f.containerStreet.Add(street.GetImage()[streetRandom])
 
-	imgO, imageR, imageL, x, y := utilies.RandomSideAndSkinCharacter()
+	//view := models.NewStreet()
+	//view.GetImageView()[0].Resize(fyne.NewSize(495, 720))
+	//view.GetImageView()[0].Move(fyne.NewPos(725, 0))
+	//view.GetImageView()[2].Resize(fyne.NewSize(495, 720))
+	//view.GetImageView()[2].Move(fyne.NewPos(0, 0))
+	//f.containerView.Add(street.GetImageView()[0])
+	//f.containerView.Add(street.GetImageView()[2])
+
+	imgO, imageR, imageL, x, y := utilities.RandomSideAndSkinCharacter()
 	character := models.NewCharacter(imgO, imageR, imageL, x, y)
 	if character.GetImageOrientation() == "RIGHT" {
 		character.GetImageRight().Resize(fyne.NewSize(125, 125))
@@ -45,7 +57,7 @@ func (f *FirstSceneGame) InitScene() {
 		f.container.Add(character.GetImageLeft())
 	}
 
-	side, img, x, y := utilies.RandomSideAndSkinObstacle()
+	side, img, x, y := utilities.RandomSideAndSkinObstacle()
 	obstacle := models.NewObstacle(x, y, img, true, side)
 	obstacle.GetImage().Resize(obstacle.GetSize())
 	obstacle.GetImage().Move(obstacle.GetPosition())
@@ -58,9 +70,11 @@ func (f *FirstSceneGame) InitScene() {
 	f.score = score
 	f.container.Add(f.score)
 
-	f.window.SetContent(f.container)
+	f.window.SetContent(container.NewWithoutLayout(f.containerStreet, f.container))
 
-	//street.AddStreetMovement(f.container, streetRandom, character, obstacle)
+	street.AddStreetMovement(f.containerStreet, character, obstacle)
+
+	//street.AddMoveViews(f.containerStreet, character, obstacle)
 
 	go obstacle.ObstaclesGeneratorAndMove(character, f.container, f.score)
 
@@ -76,15 +90,18 @@ func (f *FirstSceneGame) InitScene() {
 			}
 		}
 	})
-	go ValidateCrash(character, obstacle)
+
+	go ValidateCrash(character, obstacle, f.window, f.app)
 
 }
 
-func ValidateCrash(character *models.Character, obstacle *models.Obstacle) {
-	for {
+func ValidateCrash(character *models.Character, obstacle *models.Obstacle, window fyne.Window, app fyne.App) {
+	for character.GetLife() && obstacle.GetStatus() {
 		if character.GetPosition().X == obstacle.GetPosition().X && obstacle.GetPosition().Y >= 470 {
 			obstacle.SetStatus(false)
 			character.SetLife(false)
 		}
 	}
+	endSceneGame := NewEndSceneGame(window, app)
+	endSceneGame.EndGameScene(character, obstacle)
 }

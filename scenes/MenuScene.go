@@ -22,24 +22,23 @@ func NewMenuScene(w fyne.Window, a fyne.App) *MenuScene {
 
 func (m *MenuScene) Menu() {
 
-	title := widget.NewLabel("EVACIÓN EXTREMA")
-	title.TextStyle = fyne.TextStyle{Bold: true, TabWidth: 0}
-	title.Resize(fyne.NewSize(200, 400))
-	title.Move(fyne.NewPos(540, 50))
+	backgroundTitle := canvas.NewImageFromURI(storage.NewFileURI("./assets/backgrounds/evacionextrematitle.png"))
+	backgroundTitle.Resize(fyne.NewSize(1240, 720))
+	backgroundTitle.Move(fyne.NewPos(0, 0))
 
 	start := widget.NewButton("START", m.Start)
 	start.Resize(fyne.NewSize(200, 50))
-	start.Move(fyne.NewPos(150, 250))
+	start.Move(fyne.NewPos(150, 300))
 
 	exit := widget.NewButton("EXIT", m.Exit)
 	exit.Resize(fyne.NewSize(200, 50))
-	exit.Move(fyne.NewPos(900, 250))
+	exit.Move(fyne.NewPos(900, 300))
 
-	backgroundImage := canvas.NewImageFromURI(storage.NewFileURI("./assets/backgrounds/background2.png"))
+	backgroundImage := canvas.NewImageFromURI(storage.NewFileURI("./assets/backgrounds/backgroundmenu.png"))
 	backgroundImage.Resize(fyne.NewSize(1240, 720))
 	backgroundImage.Move(fyne.NewPos(0, 0))
 
-	m.window.SetContent(container.NewWithoutLayout(backgroundImage, title, start, exit))
+	m.window.SetContent(container.NewWithoutLayout(backgroundImage, backgroundTitle, start, exit))
 
 }
 

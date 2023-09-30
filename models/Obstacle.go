@@ -5,7 +5,7 @@ import (
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/widget"
-	"ganego/utilies"
+	"ganego/utilities"
 	"time"
 )
 
@@ -64,24 +64,41 @@ func (o *Obstacle) GetSide() string {
 }
 
 func (o *Obstacle) ObstaclesGeneratorAndMove(character *Character, container *fyne.Container, score *widget.Label) {
+	count := 0
+	speed := 50
+	move := 10
 	for o.status && character.GetLife() {
-		o.position.Y += 5
+		o.position.Y += float32(move)
 		o.SetPosition(fyne.NewPos(o.position.X, o.position.Y))
 		o.image.Move(o.GetPosition())
 		if o.position.Y >= 720 {
 			container.Remove(o.GetImage())
-			side, image, posX, posY := utilies.RandomSideAndSkinObstacle()
+			side, image, posX, posY := utilities.RandomSideAndSkinObstacle()
 			obstacle := NewObstacle(posX, posY, image, true, side)
 			obstacle.GetImage().Resize(obstacle.GetSize())
 			obstacle.GetImage().Move(obstacle.GetPosition())
 			character.SetScore(character.GetScore() + 1)
 			score.SetText(fmt.Sprintf("Score: %d", character.GetScore()))
+			if speed == 1 {
+				speed = 1
+			} else {
+				speed--
+			}
+			if move < 15 {
+				count++
+				if count == 10 {
+					move++
+					count = 0
+				}
+			} else {
+				move = 15
+			}
 			container.Add(obstacle.GetImage())
 			container.Refresh()
 			o.position.X = obstacle.GetPosition().X
 			o.image = obstacle.GetImage()
 			o.position.Y = obstacle.GetPosition().Y
 		}
-		time.Sleep(50 * time.Millisecond)
+		time.Sleep(time.Duration(speed) * time.Millisecond)
 	}
 }
