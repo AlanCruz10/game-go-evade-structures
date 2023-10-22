@@ -58,36 +58,24 @@ func (s *Street) GetSize() fyne.Size {
 	return s.size
 }
 
-func (s *Street) AddStreetMovement(container *fyne.Container, character *Character, obstacle *Obstacle) {
-	s.GetImage()[0].Resize(s.GetSize())
-	s.GetImage()[0].Move(s.GetPosition())
+func (s *Street) AddStreetMovement(container *fyne.Container, character *Character, obstacle *Obstacle, onScreen *canvas.Image) {
 
-	s.GetImage()[1].Resize(s.GetSize())
-	s.GetImage()[1].Move(s.GetPosition())
-
-	s.GetImage()[2].Resize(s.GetSize())
-	s.GetImage()[2].Move(s.GetPosition())
-
-	onScreen := s.GetImage()[0]
-
-	go func() {
-		number := 0
-		for {
-			if character.GetLife() && obstacle.GetStatus() {
-				time.Sleep(120 * time.Millisecond)
-				container.Remove(onScreen)
-				onScreen = s.image[number]
-				container.Add(onScreen)
-				container.Refresh()
-				number++
-				if number == 2 {
-					number = 0
-				}
+	number := 0
+	for {
+		if character.GetLife() && obstacle.GetStatus() {
+			time.Sleep(120 * time.Millisecond)
+			container.Remove(onScreen)
+			onScreen = s.image[number]
+			container.Add(onScreen)
+			container.Refresh()
+			number++
+			if number == 2 {
+				number = 0
 			}
 		}
-	}()
+	}
 
-	container.Add(onScreen)
+	//container.Add(onScreen)
 
 }
 

@@ -37,6 +37,17 @@ func (f *FirstSceneGame) InitScene() {
 	street.GetImage()[streetRandom].Move(street.GetPosition())
 	f.containerStreet.Add(street.GetImage()[streetRandom])
 
+	street.GetImage()[0].Resize(street.GetSize())
+	street.GetImage()[0].Move(street.GetPosition())
+
+	street.GetImage()[1].Resize(street.GetSize())
+	street.GetImage()[1].Move(street.GetPosition())
+
+	street.GetImage()[2].Resize(street.GetSize())
+	street.GetImage()[2].Move(street.GetPosition())
+
+	onScreen := street.GetImage()[0]
+
 	//view := models.NewStreet()
 	//view.GetImageView()[0].Resize(fyne.NewSize(495, 720))
 	//view.GetImageView()[0].Move(fyne.NewPos(725, 0))
@@ -72,7 +83,7 @@ func (f *FirstSceneGame) InitScene() {
 
 	f.window.SetContent(container.NewWithoutLayout(f.containerStreet, f.container))
 
-	street.AddStreetMovement(f.containerStreet, character, obstacle)
+	go street.AddStreetMovement(f.containerStreet, character, obstacle, onScreen)
 
 	//street.AddMoveViews(f.containerStreet, character, obstacle)
 
